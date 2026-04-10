@@ -1,4 +1,4 @@
-# search-filters-tool
+# Complexity Group Education Materials
 
 A lightweight, client-side search and filter tool that pulls structured data from Google Sheets and displays dynamic, searchable results in the browser.
 
