@@ -1,322 +1,300 @@
 <!doctype html>
 <html lang="en">
 <head>
- <meta charset="utf-8" />
- <meta name="viewport" content="width=device-width,initial-scale=1" />
- <title>Search + Filters</title>
- <style>
-   *, *::before, *::after { box-sizing: border-box; }
-   body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f5f5f5; margin: 0; padding: 20px; }
-   #results { max-width: 980px; margin: 0 auto; }
-   #searchInput { width: 100%; padding: 12px 16px; font-size: 15px; border-radius: 10px; border: 1px solid #ddd; display: block; margin: 0 auto 12px; background: white; }
-   #searchInput:focus { outline: 2px solid #111; }
-   .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; margin-bottom: 20px; }
-   .btn { padding: 11px 22px; border-radius: 999px; border: 1px solid #bbb; background: white; cursor: pointer; font-size: 13px; transition: background 0.15s, border-color 0.15s; }
-   .btn:hover { background: #f0f0f0; }
-   .btn.purple { background: #c44bc0; color: white; border-color: #c44bc0; font-weight: 600; }
-   .btn.purple:hover { background: #a83aa4; border-color: #a83aa4; }
-   .primary { background: #111; color: #fff; border: none; padding: 11px 26px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; }
-   .primary:hover { background: #333; }
-   .filterBar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: center; margin-bottom: 14px; }
-   .yearInlineContainer { max-width: 420px; margin: 0 auto 8px; background: white; border: 1px solid #ddd; border-radius: 10px; padding: 12px 20px; }
-   .yearInlineHeader { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
-   .dropdown { position: relative; }
-   .dropdownTrigger { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; border: 1px solid #ccc; background: white; cursor: pointer; font-size: 13px; white-space: nowrap; min-width: 160px; justify-content: space-between; transition: border-color 0.15s, box-shadow 0.15s; user-select: none; }
-   .dropdownTrigger:hover { border-color: #999; }
-   .dropdownTrigger.active { border: 2px solid #111; font-weight: 600; }
-   .dropdownTrigger .chevron { font-size: 10px; color: #666; margin-left: 4px; transition: transform 0.2s; }
-   .dropdown.open .dropdownTrigger .chevron { transform: rotate(180deg); }
-   .dropdownTrigger .badge { background: #c44bc0; color: white; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin-left: 2px; }
-   .dropdownPanel { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; background: #555; border-radius: 10px; padding: 8px; min-width: 220px; max-height: 340px; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
-   .dropdown.open .dropdownPanel { display: block; }
-   .panelHeader { background: #c44bc0; color: white; border-radius: 7px; padding: 9px 12px; font-weight: 700; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-   .panelOption { display: block; width: 100%; text-align: left; padding: 9px 12px; border-radius: 6px; border: none; background: transparent; color: white; font-size: 13px; cursor: pointer; transition: background 0.1s; }
-   .panelOption:hover { background: rgba(255,255,255,0.15); }
-   .panelOption.selected { background: rgba(255,255,255,0.2); font-weight: 600; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Search + Filters</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f5f5f5; margin: 0; padding: 20px; }
+    #results { max-width: 980px; margin: 0 auto; }
+    #searchInput { width: 100%; padding: 12px 16px; font-size: 15px; border-radius: 10px; border: 1px solid #ddd; display: block; margin: 0 auto 12px; background: white; }
+    #searchInput:focus { outline: 2px solid #111; }
+    .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; margin-bottom: 20px; }
+    .btn { padding: 11px 22px; border-radius: 999px; border: 1px solid #bbb; background: white; cursor: pointer; font-size: 13px; transition: background 0.15s, border-color 0.15s; }
+    .btn:hover { background: #f0f0f0; }
+    .btn.purple { background: #c44bc0; color: white; border-color: #c44bc0; font-weight: 600; }
+    .btn.purple:hover { background: #a83aa4; border-color: #a83aa4; }
+    .primary { background: #111; color: #fff; border: none; padding: 11px 26px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .primary:hover { background: #333; }
+    .filterBar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; justify-content: center; margin-bottom: 14px; }
+    .yearInlineContainer { max-width: calc(420px + 4in); margin: 0 auto 8px; background: white; border: 1px solid #ddd; border-radius: 10px; padding: 12px 20px; }
+    .yearInlineHeader { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+    .dropdown { position: relative; }
+    .dropdownTrigger { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; border: 1px solid #ccc; background: white; cursor: pointer; font-size: 13px; white-space: nowrap; min-width: 160px; justify-content: space-between; transition: border-color 0.15s, box-shadow 0.15s; user-select: none; }
+    .dropdownTrigger:hover { border-color: #999; }
+    .dropdownTrigger.active { border: 2px solid #111; font-weight: 600; }
+    .dropdownTrigger .chevron { font-size: 10px; color: #666; margin-left: 4px; transition: transform 0.2s; }
+    .dropdown.open .dropdownTrigger .chevron { transform: rotate(180deg); }
+    .dropdownTrigger .badge { background: #c44bc0; color: white; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin-left: 2px; }
+    .dropdownPanel { display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 200; background: #555; border-radius: 10px; padding: 8px; min-width: 220px; max-height: 340px; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
+    .dropdown.open .dropdownPanel { display: block; }
+    .panelHeader { background: #c44bc0; color: white; border-radius: 7px; padding: 9px 12px; font-weight: 700; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .panelOption { display: block; width: 100%; text-align: left; padding: 9px 12px; border-radius: 6px; border: none; background: transparent; color: white; font-size: 13px; cursor: pointer; transition: background 0.1s; }
+    .panelOption:hover { background: rgba(255,255,255,0.15); }
+    .panelOption.selected { background: rgba(255,255,255,0.2); font-weight: 600; }
 
+    /* ── Dual-thumb range slider ── */
+    .sliderWrapper.dual {
+      position: relative;
+      height: 44px;
+      margin: 16px 0 8px;
+    }
+    .sliderWrapper.dual .rangeSlider {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: auto;
+      background: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+      outline: none;
+    }
+    .sliderWrapper.dual .rangeSlider::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 5px;
+      background: transparent;
+    }
+    .sliderWrapper.dual .rangeSlider::-moz-range-track {
+      height: 6px;
+      border-radius: 5px;
+      background: transparent;
+    }
+    .sliderWrapper.dual .rangeSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #000;
+      cursor: grab;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1.5px #000, 0 2px 6px rgba(0,0,0,0.25);
+      margin-top: -8px;
+      transition: box-shadow 0.15s;
+    }
+    .sliderWrapper.dual .rangeSlider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #000;
+      cursor: grab;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 1.5px #000, 0 2px 6px rgba(0,0,0,0.25);
+      transition: box-shadow 0.15s;
+    }
+    .sliderWrapper.dual .rangeSlider:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 0 6px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .sliderWrapper.dual .rangeSlider:hover::-moz-range-thumb {
+      box-shadow: 0 0 0 6px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .sliderWrapper.dual .rangeSlider:active { cursor: grabbing; }
+    .sliderWrapper.dual .rangeSlider:active::-webkit-slider-thumb {
+      cursor: grabbing;
+      box-shadow: 0 0 0 10px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .sliderWrapper.dual .rangeSlider:active::-moz-range-thumb {
+      cursor: grabbing;
+      box-shadow: 0 0 0 10px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .dualTrackBg {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 6px;
+      transform: translateY(-50%);
+      border-radius: 5px;
+      background: #ddd;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .dualTrackFill {
+      position: absolute;
+      top: 50%;
+      height: 6px;
+      transform: translateY(-50%);
+      border-radius: 5px;
+      background: #000;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #yearSliderMin { z-index: 3; }
+    #yearSliderMax { z-index: 2; }
 
-   /* ── Dual-thumb range slider ── */
-   .sliderWrapper.dual {
-     position: relative;
-     height: 44px;
-     margin: 16px 0 8px;
-   }
-   .sliderWrapper.dual .rangeSlider {
-     position: absolute;
-     left: 0;
-     top: 0;
-     width: 100%;
-     height: 100%;
-     pointer-events: auto;
-     background: transparent;
-     -webkit-appearance: none;
-     appearance: none;
-     margin: 0;
-     outline: none;
-   }
-   .sliderWrapper.dual .rangeSlider::-webkit-slider-runnable-track {
-     height: 6px;
-     border-radius: 5px;
-     background: transparent;
-   }
-   .sliderWrapper.dual .rangeSlider::-moz-range-track {
-     height: 6px;
-     border-radius: 5px;
-     background: transparent;
-   }
-   .sliderWrapper.dual .rangeSlider::-webkit-slider-thumb {
-     -webkit-appearance: none;
-     appearance: none;
-     width: 22px;
-     height: 22px;
-     border-radius: 50%;
-     background: #000;
-     cursor: grab;
-     border: 3px solid #fff;
-     box-shadow: 0 0 0 1.5px #000, 0 2px 6px rgba(0,0,0,0.25);
-     margin-top: -8px;
-     transition: box-shadow 0.15s;
-   }
-   .sliderWrapper.dual .rangeSlider::-moz-range-thumb {
-     width: 22px;
-     height: 22px;
-     border-radius: 50%;
-     background: #000;
-     cursor: grab;
-     border: 3px solid #fff;
-     box-shadow: 0 0 0 1.5px #000, 0 2px 6px rgba(0,0,0,0.25);
-     transition: box-shadow 0.15s;
-   }
-   .sliderWrapper.dual .rangeSlider:hover::-webkit-slider-thumb {
-     box-shadow: 0 0 0 6px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.25);
-   }
-   .sliderWrapper.dual .rangeSlider:hover::-moz-range-thumb {
-     box-shadow: 0 0 0 6px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.25);
-   }
-   .sliderWrapper.dual .rangeSlider:active { cursor: grabbing; }
-   .sliderWrapper.dual .rangeSlider:active::-webkit-slider-thumb {
-     cursor: grabbing;
-     box-shadow: 0 0 0 10px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.3);
-   }
-   .sliderWrapper.dual .rangeSlider:active::-moz-range-thumb {
-     cursor: grabbing;
-     box-shadow: 0 0 0 10px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.3);
-   }
-   .dualTrackBg {
-     position: absolute;
-     top: 50%;
-     left: 0;
-     right: 0;
-     height: 6px;
-     transform: translateY(-50%);
-     border-radius: 5px;
-     background: #ddd;
-     pointer-events: none;
-     z-index: 0;
-   }
-   .dualTrackFill {
-     position: absolute;
-     top: 50%;
-     height: 6px;
-     transform: translateY(-50%);
-     border-radius: 5px;
-     background: #000;
-     pointer-events: none;
-     z-index: 1;
-   }
-   #yearSliderMin { z-index: 3; }
-   #yearSliderMax { z-index: 2; }
-
-
-   .sliderValues { display:flex; justify-content:center; margin-top:6px; font-size:13px; font-weight:600; color:#111; }
-   .yearLabels { display:flex; justify-content:space-between; margin-top:2px; font-size:11px; color:#666; }
-   .yearResetBtn { font-size:12px; color:#555; cursor:pointer; background:none; border:none; text-decoration:underline; }
-   .resultItem { background: white; border-radius: 10px; border: 1px solid #eee; padding: 14px; margin-bottom: 10px; }
-   .meta { color: #666; font-size: 13px; margin-top: 4px; }
-   .docLink { color: #0a66ff; font-weight: 700; text-decoration: none; }
-   .tag { display: inline-block; margin: 4px 4px 0 0; padding: 5px 8px; border-radius: 999px; border: 1px solid #eee; font-size: 12px; background: #fafafa; }
-   @media (max-width: 600px) { .dropdownTrigger { min-width: 120px; font-size: 12px; } }
- </style>
+    .sliderValues { display:flex; justify-content:center; margin-top:6px; font-size:13px; font-weight:600; color:#111; }
+    .yearLabels { display:flex; justify-content:space-between; margin-top:2px; font-size:11px; color:#666; }
+    .yearResetBtn { font-size:12px; color:#555; cursor:pointer; background:none; border:none; text-decoration:underline; }
+    .resultItem { background: white; border-radius: 10px; border: 1px solid #eee; padding: 14px; margin-bottom: 10px; }
+    .meta { color: #666; font-size: 13px; margin-top: 4px; }
+    .docLink { color: #0a66ff; font-weight: 700; text-decoration: none; }
+    .tag { display: inline-block; margin: 4px 4px 0 0; padding: 5px 8px; border-radius: 999px; border: 1px solid #eee; font-size: 12px; background: #fafafa; }
+    @media (max-width: 600px) { .dropdownTrigger { min-width: 120px; font-size: 12px; } }
+  </style>
 </head>
 <body>
 <div id="results">
- <input id="searchInput" placeholder="Search keywords (ex: adaptation planning, mental models)" />
- <div class="filterBar" id="filterBar">
-   <div class="dropdown" id="dd-concepts">
-     <div class="dropdownTrigger" onclick="toggleDropdown('dd-concepts')"><span>Filter by Concept</span><span class="chevron">▼</span></div>
-     <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('conceptsFilter', 'dd-concepts')"><span class="checkmark">✓</span> Filter by Concept</div><div id="conceptsFilter"></div></div>
-   </div>
-   <div class="dropdown" id="dd-format">
-     <div class="dropdownTrigger" onclick="toggleDropdown('dd-format')"><span>Filter by Format</span><span class="chevron">▼</span></div>
-     <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('formatFilter', 'dd-format')"><span class="checkmark">✓</span> Filter by Format</div><div id="formatFilter"></div></div>
-   </div>
-   <div class="dropdown" id="dd-difficulty">
-     <div class="dropdownTrigger" onclick="toggleDropdown('dd-difficulty')"><span>Filter by Difficulty</span><span class="chevron">▼</span></div>
-     <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('difficultyFilter', 'dd-difficulty')"><span class="checkmark">✓</span> Filter by Difficulty</div><div id="difficultyFilter"></div></div>
-   </div>
-   <div class="dropdown" id="dd-publisher">
-     <div class="dropdownTrigger" onclick="toggleDropdown('dd-publisher')"><span>Filter by Publisher</span><span class="chevron">▼</span></div>
-     <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('publisherFilter', 'dd-publisher')"><span class="checkmark">✓</span> Filter by Publisher</div><div id="publisherFilter"></div></div>
-   </div>
-   <div class="dropdown" id="dd-author">
-     <div class="dropdownTrigger" onclick="toggleDropdown('dd-author')"><span>Filter by Author</span><span class="chevron">▼</span></div>
-     <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('authorFilter', 'dd-author')"><span class="checkmark">✓</span> Filter by Author</div><div id="authorFilter"></div></div>
-   </div>
- </div>
- <div class="yearInlineContainer">
-   <div class="yearInlineHeader"><span>Timeline</span><button class="yearResetBtn" onclick="resetYearSlider()">Reset</button></div>
-   <div class="yearSliderContainer">
-     <!-- Dual-thumb slider: min handle + max handle stacked -->
-     <div class="sliderWrapper dual" id="dualSliderWrapper">
-       <div class="dualTrackBg"></div>
-       <div class="dualTrackFill" id="dualTrackFill"></div>
-       <input type="range" id="yearSliderMin" class="rangeSlider" min="2000" max="2030" value="2000" step="1">
-       <input type="range" id="yearSliderMax" class="rangeSlider" min="2000" max="2030" value="2030" step="1">
-     </div>
-     <div class="sliderValues"><span>Year: <strong id="yearMinValue">2000</strong> &ndash; <strong id="yearMaxValue">2030</strong></span></div>
-     <div class="yearLabels"><span>2000</span><span>2030</span></div>
-   </div>
- </div>
- <div class="controls"><button class="btn purple" id="clearBtn">Clear all</button><button class="primary" id="searchBtn">Search</button></div>
- <div id="resultsList"></div>
+  <input id="searchInput" placeholder="Search keywords (ex: adaptation planning, mental models)" />
+  <div class="filterBar" id="filterBar">
+    <div class="dropdown" id="dd-concepts">
+      <div class="dropdownTrigger" onclick="toggleDropdown('dd-concepts')"><span>Filter by Concept</span><span class="chevron">▼</span></div>
+      <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('conceptsFilter', 'dd-concepts')"><span class="checkmark">✓</span> Filter by Concept</div><div id="conceptsFilter"></div></div>
+    </div>
+    <div class="dropdown" id="dd-format">
+      <div class="dropdownTrigger" onclick="toggleDropdown('dd-format')"><span>Filter by Format</span><span class="chevron">▼</span></div>
+      <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('formatFilter', 'dd-format')"><span class="checkmark">✓</span> Filter by Format</div><div id="formatFilter"></div></div>
+    </div>
+    <div class="dropdown" id="dd-difficulty">
+      <div class="dropdownTrigger" onclick="toggleDropdown('dd-difficulty')"><span>Filter by Difficulty</span><span class="chevron">▼</span></div>
+      <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('difficultyFilter', 'dd-difficulty')"><span class="checkmark">✓</span> Filter by Difficulty</div><div id="difficultyFilter"></div></div>
+    </div>
+    <div class="dropdown" id="dd-publisher">
+      <div class="dropdownTrigger" onclick="toggleDropdown('dd-publisher')"><span>Filter by Publisher</span><span class="chevron">▼</span></div>
+      <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('publisherFilter', 'dd-publisher')"><span class="checkmark">✓</span> Filter by Publisher</div><div id="publisherFilter"></div></div>
+    </div>
+    <div class="dropdown" id="dd-author">
+      <div class="dropdownTrigger" onclick="toggleDropdown('dd-author')"><span>Filter by Author</span><span class="chevron">▼</span></div>
+      <div class="dropdownPanel"><div class="panelHeader" onclick="toggleSelectAll('authorFilter', 'dd-author')"><span class="checkmark">✓</span> Filter by Author</div><div id="authorFilter"></div></div>
+    </div>
+  </div>
+  <div class="yearInlineContainer">
+    <div class="yearInlineHeader"><span>Timeline</span><button class="yearResetBtn" onclick="resetYearSlider()">Reset</button></div>
+    <div class="yearSliderContainer">
+      <!-- Dual-thumb slider: min handle + max handle stacked -->
+      <div class="sliderWrapper dual" id="dualSliderWrapper">
+        <div class="dualTrackBg"></div>
+        <div class="dualTrackFill" id="dualTrackFill"></div>
+        <input type="range" id="yearSliderMin" class="rangeSlider" min="2000" max="2030" value="2000" step="1">
+        <input type="range" id="yearSliderMax" class="rangeSlider" min="2000" max="2030" value="2030" step="1">
+      </div>
+      <div class="sliderValues"><span>Year: <strong id="yearMinValue">2000</strong> &ndash; <strong id="yearMaxValue">2030</strong></span></div>
+      <div class="yearLabels"><span>2000</span><span>2030</span></div>
+    </div>
+  </div>
+  <div class="controls"><button class="btn purple" id="clearBtn">Clear all</button><button class="primary" id="searchBtn">Search</button></div>
+  <div id="resultsList"></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
- const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQpCBZoKnyzieEhyCSaowjl2HVIh6IdgXA5O5FgKhpA9PPB1srLautceByS-tP7DySeSb4xPzzSlabD/pub?output=csv";
- const TITLE="Title",AUTHOR="Author",YEAR="Year",PUBLISHER="Publisher",FORMAT="Format",DIFFICULTY="Difficulty",DOCLINK="Document Link",CONCEPTS="Concepts";
- const DEFAULT_CONCEPTS = ["Elements & relations","Scale","Structure & function","Order","Process","Cause & effect","Multiple causes","Nonlinearity","Feedback","Emergence","Adaption","Group dynamics & social intelligence","Unmeasurable Uncertainty","Mental Models"];
- const YEAR_MIN_DEFAULT = 2000;
- const YEAR_MAX_DEFAULT = 2030;
- let db = [], headers = [], headerMap = {};
+  const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQpCBZoKnyzieEhyCSaowjl2HVIh6IdgXA5O5FgKhpA9PPB1srLautceByS-tP7DySeSb4xPzzSlabD/pub?output=csv";
+  const TITLE="Title",AUTHOR="Author",YEAR="Year",PUBLISHER="Publisher",FORMAT="Format",DIFFICULTY="Difficulty",DOCLINK="Document Link",CONCEPTS="Concepts";
+  const DEFAULT_CONCEPTS = ["Elements & relations","Scale","Structure & function","Order","Process","Cause & effect","Multiple causes","Nonlinearity","Feedback","Emergence","Adaption","Group dynamics & social intelligence","Unmeasurable Uncertainty","Mental Models"];
+  const YEAR_MIN_DEFAULT = 2000;
+  const YEAR_MAX_DEFAULT = 2030;
+  let db = [], headers = [], headerMap = {};
 
+  function cleanText(input){ if(input===null||input===undefined) return ""; let s=String(input); s=s.replace(/\uFEFF/g,"").replace(/[\u200B-\u200D\u2060]/g,"").replace(/\u00A0/g," ").replace(/\u00AD/g,"").replace(/[\u0000-\u001F\u007F-\u009F]/g,""); s=s.replace(/Â/g,"").replace(/â€™/g,"'").replace(/â€˜/g,"'").replace(/â€œ/g,'"').replace(/â€\u009D/g,'"').replace(/â€"/g,"-").replace(/â€¦/g,"...").replace(/\ufffd/g,""); try{s=s.normalize("NFKC");}catch(e){} return s.replace(/\s+/g," ").trim(); }
+  const norm = s => cleanText(s);
+  function findCol(possibleNames){ if(!db.length) return null; const cols = Object.keys(db[0] || {}); for(const p of possibleNames){ const found = cols.find(c => cleanText(c).toLowerCase() === p.toLowerCase()); if(found) return found; } for(const p of possibleNames){ const found = cols.find(c => cleanText(c).toLowerCase().includes(p.toLowerCase())); if(found) return found; } return null; }
+  function splitCellCSV(s){ if(!s) return []; return String(s).split(/[,;\n]/g).map(x=>cleanText(x)).filter(x=>x && x.length > 1 && x.toLowerCase() !== "false" && x.toLowerCase() !== "true"); }
+  function toggleDropdown(id){ const el=document.getElementById(id); const isOpen=el.classList.contains("open"); document.querySelectorAll(".dropdown.open").forEach(d=>d.classList.remove("open")); if(!isOpen) el.classList.add("open"); }
+  document.addEventListener("click", e=>{ if(!e.target.closest(".dropdown")) document.querySelectorAll(".dropdown.open").forEach(d=>d.classList.remove("open")); });
+  function fillOptions(containerId, items){ const el=document.getElementById(containerId); if(!el) return; el.innerHTML=""; items.forEach(label=>{ const btn=document.createElement("button"); btn.className="panelOption"; btn.textContent=label; btn.dataset.value=label; btn.onclick=()=>{ btn.classList.toggle("selected"); updateBadge(containerId); }; el.appendChild(btn); }); }
+  function getSelected(containerId){ return [...document.querySelectorAll(`#${containerId} .panelOption.selected`)].map(b=>b.dataset.value); }
+  function clearOptions(containerId){ document.querySelectorAll(`#${containerId} .panelOption`).forEach(b=>b.classList.remove("selected")); updateBadge(containerId); }
+  function toggleSelectAll(containerId){ const all = [...document.querySelectorAll(`#${containerId} .panelOption`)]; const allSelected = all.every(b => b.classList.contains("selected")); if(allSelected){ all.forEach(b=>b.classList.remove("selected")); } else { all.forEach(b=>b.classList.add("selected")); } updateBadge(containerId); }
+  const filterToDd = { conceptsFilter:"dd-concepts", formatFilter:"dd-format", difficultyFilter:"dd-difficulty", publisherFilter:"dd-publisher", authorFilter:"dd-author" };
+  function updateBadge(containerId){ const count = getSelected(containerId).length; const ddId = filterToDd[containerId]; if(!ddId) return; const trigger = document.querySelector(`#${ddId} .dropdownTrigger`); let badge = trigger.querySelector(".badge"); if(count > 0){ trigger.classList.add("active"); if(!badge){ badge = document.createElement("span"); badge.className = "badge"; trigger.insertBefore(badge, trigger.querySelector(".chevron")); } badge.textContent = count; } else { trigger.classList.remove("active"); if(badge) badge.remove(); } }
 
- function cleanText(input){ if(input===null||input===undefined) return ""; let s=String(input); s=s.replace(/\uFEFF/g,"").replace(/[\u200B-\u200D\u2060]/g,"").replace(/\u00A0/g," ").replace(/\u00AD/g,"").replace(/[\u0000-\u001F\u007F-\u009F]/g,""); s=s.replace(/Â/g,"").replace(/â€™/g,"'").replace(/â€˜/g,"'").replace(/â€œ/g,'"').replace(/â€\u009D/g,'"').replace(/â€"/g,"-").replace(/â€¦/g,"...").replace(/\ufffd/g,""); try{s=s.normalize("NFKC");}catch(e){} return s.replace(/\s+/g," ").trim(); }
- const norm = s => cleanText(s);
- function findCol(possibleNames){ if(!db.length) return null; const cols = Object.keys(db[0] || {}); for(const p of possibleNames){ const found = cols.find(c => cleanText(c).toLowerCase() === p.toLowerCase()); if(found) return found; } for(const p of possibleNames){ const found = cols.find(c => cleanText(c).toLowerCase().includes(p.toLowerCase())); if(found) return found; } return null; }
- function splitCellCSV(s){ if(!s) return []; return String(s).split(/[,;\n]/g).map(x=>cleanText(x)).filter(x=>x && x.length > 1 && x.toLowerCase() !== "false" && x.toLowerCase() !== "true"); }
- function toggleDropdown(id){ const el=document.getElementById(id); const isOpen=el.classList.contains("open"); document.querySelectorAll(".dropdown.open").forEach(d=>d.classList.remove("open")); if(!isOpen) el.classList.add("open"); }
- document.addEventListener("click", e=>{ if(!e.target.closest(".dropdown")) document.querySelectorAll(".dropdown.open").forEach(d=>d.classList.remove("open")); });
- function fillOptions(containerId, items){ const el=document.getElementById(containerId); if(!el) return; el.innerHTML=""; items.forEach(label=>{ const btn=document.createElement("button"); btn.className="panelOption"; btn.textContent=label; btn.dataset.value=label; btn.onclick=()=>{ btn.classList.toggle("selected"); updateBadge(containerId); }; el.appendChild(btn); }); }
- function getSelected(containerId){ return [...document.querySelectorAll(`#${containerId} .panelOption.selected`)].map(b=>b.dataset.value); }
- function clearOptions(containerId){ document.querySelectorAll(`#${containerId} .panelOption`).forEach(b=>b.classList.remove("selected")); updateBadge(containerId); }
- function toggleSelectAll(containerId){ const all = [...document.querySelectorAll(`#${containerId} .panelOption`)]; const allSelected = all.every(b => b.classList.contains("selected")); if(allSelected){ all.forEach(b=>b.classList.remove("selected")); } else { all.forEach(b=>b.classList.add("selected")); } updateBadge(containerId); }
- const filterToDd = { conceptsFilter:"dd-concepts", formatFilter:"dd-format", difficultyFilter:"dd-difficulty", publisherFilter:"dd-publisher", authorFilter:"dd-author" };
- function updateBadge(containerId){ const count = getSelected(containerId).length; const ddId = filterToDd[containerId]; if(!ddId) return; const trigger = document.querySelector(`#${ddId} .dropdownTrigger`); let badge = trigger.querySelector(".badge"); if(count > 0){ trigger.classList.add("active"); if(!badge){ badge = document.createElement("span"); badge.className = "badge"; trigger.insertBefore(badge, trigger.querySelector(".chevron")); } badge.textContent = count; } else { trigger.classList.remove("active"); if(badge) badge.remove(); } }
+  /* ── Dual-thumb year slider logic ── */
+  function updateDualSlider(activeThumb) {
+    const sliderMin = document.getElementById("yearSliderMin");
+    const sliderMax = document.getElementById("yearSliderMax");
+    const fill      = document.getElementById("dualTrackFill");
+    const minLabel  = document.getElementById("yearMinValue");
+    const maxLabel  = document.getElementById("yearMaxValue");
 
+    let lo = parseInt(sliderMin.value, 10);
+    let hi = parseInt(sliderMax.value, 10);
 
- /* ── Dual-thumb year slider logic ── */
- function updateDualSlider(activeThumb) {
-   const sliderMin = document.getElementById("yearSliderMin");
-   const sliderMax = document.getElementById("yearSliderMax");
-   const fill      = document.getElementById("dualTrackFill");
-   const minLabel  = document.getElementById("yearMinValue");
-   const maxLabel  = document.getElementById("yearMaxValue");
+    // enforce minimum 1-year gap
+    const MIN_GAP = 1;
+    if (activeThumb === "min") {
+      if (lo > hi - MIN_GAP) { lo = hi - MIN_GAP; sliderMin.value = lo; }
+    } else {
+      if (hi < lo + MIN_GAP) { hi = lo + MIN_GAP; sliderMax.value = hi; }
+    }
 
+    // ── Hitbox split via clip-path ──
+    // min slider is clippable to [0 .. midpoint], max to [midpoint .. 100%]
+    // midpoint sits halfway between the two thumb positions so each slider
+    // only receives pointer events on the side where its thumb actually lives.
+    const rangeTotal = YEAR_MAX_DEFAULT - YEAR_MIN_DEFAULT;
+    const loPct = ((lo - YEAR_MIN_DEFAULT) / rangeTotal) * 100;
+    const hiPct = ((hi - YEAR_MIN_DEFAULT) / rangeTotal) * 100;
+    // give each thumb a generous overlap zone around the midpoint (+/- 2%)
+    const mid = (loPct + hiPct) / 2;
+    const minClipRight = Math.min(mid + 2, 100);
+    const maxClipLeft  = Math.max(mid - 2, 0);
 
-   let lo = parseInt(sliderMin.value, 10);
-   let hi = parseInt(sliderMax.value, 10);
+    sliderMin.style.clipPath = `inset(0 ${(100 - minClipRight).toFixed(2)}% 0 0)`;
+    sliderMax.style.clipPath = `inset(0 0 0 ${maxClipLeft.toFixed(2)}%)`;
 
+    // ── Visual fill ──
+    const leftPct  = loPct;
+    const widthPct = hiPct - loPct;
+    fill.style.left  = leftPct + "%";
+    fill.style.width = widthPct + "%";
 
-   // enforce minimum 1-year gap
-   const MIN_GAP = 1;
-   if (activeThumb === "min") {
-     if (lo > hi - MIN_GAP) { lo = hi - MIN_GAP; sliderMin.value = lo; }
-   } else {
-     if (hi < lo + MIN_GAP) { hi = lo + MIN_GAP; sliderMax.value = hi; }
-   }
+    minLabel.textContent = lo;
+    maxLabel.textContent = hi;
+  }
 
+  function setupYearSlider() {
+    const sliderMin = document.getElementById("yearSliderMin");
+    const sliderMax = document.getElementById("yearSliderMax");
 
-   // ── Hitbox split via clip-path ──
-   // min slider is clippable to [0 .. midpoint], max to [midpoint .. 100%]
-   // midpoint sits halfway between the two thumb positions so each slider
-   // only receives pointer events on the side where its thumb actually lives.
-   const rangeTotal = YEAR_MAX_DEFAULT - YEAR_MIN_DEFAULT;
-   const loPct = ((lo - YEAR_MIN_DEFAULT) / rangeTotal) * 100;
-   const hiPct = ((hi - YEAR_MIN_DEFAULT) / rangeTotal) * 100;
-   // give each thumb a generous overlap zone around the midpoint (+/- 2%)
-   const mid = (loPct + hiPct) / 2;
-   const minClipRight = Math.min(mid + 2, 100);
-   const maxClipLeft  = Math.max(mid - 2, 0);
+    sliderMin.addEventListener("input", () => updateDualSlider("min"));
+    sliderMax.addEventListener("input", () => updateDualSlider("max"));
 
+    // Bring the active thumb to the top so its hover/focus ring isn't clipped
+    sliderMin.addEventListener("pointerdown", () => { sliderMin.style.zIndex = 4; sliderMax.style.zIndex = 2; });
+    sliderMax.addEventListener("pointerdown", () => { sliderMax.style.zIndex = 4; sliderMin.style.zIndex = 2; });
 
-   sliderMin.style.clipPath = `inset(0 ${(100 - minClipRight).toFixed(2)}% 0 0)`;
-   sliderMax.style.clipPath = `inset(0 0 0 ${maxClipLeft.toFixed(2)}%)`;
+    updateDualSlider("max"); // initialise fill on load
+  }
 
+  function resetYearSlider() {
+    document.getElementById("yearSliderMin").value = YEAR_MIN_DEFAULT;
+    document.getElementById("yearSliderMax").value = YEAR_MAX_DEFAULT;
+    updateDualSlider();
+  }
 
-   // ── Visual fill ──
-   const leftPct  = loPct;
-   const widthPct = hiPct - loPct;
-   fill.style.left  = leftPct + "%";
-   fill.style.width = widthPct + "%";
+  Papa.parse(csvUrl,{ download:true, header:true, skipEmptyLines:true, transformHeader:h=>{ const c=cleanText(h).toLowerCase(); headerMap[c]=h; return h; }, transform:v=>cleanText(v), complete:({data})=>{ db=(data||[]).filter(r=>Object.values(r||{}).some(v=>String(v||"").trim()!=="")); populateFilterOptions(); } });
 
+  function populateFilterOptions(){ const sConcepts = new Set(DEFAULT_CONCEPTS.map(cleanText)); const sFormats = new Set(), sDiff = new Set(), sPubs = new Set(), sAuthors = new Set(); const cC=findCol([CONCEPTS]), cF=findCol([FORMAT]), cD=findCol([DIFFICULTY]), cP=findCol([PUBLISHER]), cA=findCol([AUTHOR]); db.forEach(row=>{ if(cC) splitCellCSV(row[cC]).forEach(c=>sConcepts.add(cleanText(c))); if(cF) splitCellCSV(row[cF]).forEach(v=>sFormats.add(cleanText(v))); if(cD) splitCellCSV(row[cD]).forEach(v=>sDiff.add(cleanText(v))); if(cP) splitCellCSV(row[cP]).forEach(v=>sPubs.add(cleanText(v))); if(cA) splitCellCSV(row[cA]).forEach(v=>sAuthors.add(cleanText(v))); }); fillOptions("conceptsFilter", [...sConcepts].sort()); fillOptions("formatFilter", [...sFormats].sort()); fillOptions("difficultyFilter", [...sDiff].sort()); fillOptions("publisherFilter", [...sPubs].sort()); fillOptions("authorFilter", [...sAuthors].sort()); setupYearSlider(); document.getElementById("searchBtn").onclick = runSearch; document.getElementById("clearBtn").onclick = clearAllAndReset; document.getElementById("searchInput").addEventListener("keydown", e=>{ if(e.key === "Enter") runSearch(); }); }
 
-   minLabel.textContent = lo;
-   maxLabel.textContent = hi;
- }
+  function runSearch(){
+    const q = norm(document.getElementById("searchInput").value).toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    const selConcepts = getSelected("conceptsFilter").map(s=>s.toLowerCase());
+    const selectedYearMin = parseInt(document.getElementById("yearSliderMin").value, 10);
+    const selectedYearMax = parseInt(document.getElementById("yearSliderMax").value, 10);
+    const colTitle=findCol([TITLE]), colAuthor=findCol([AUTHOR]), colYear=findCol([YEAR]), colConcepts=findCol([CONCEPTS]), colDoc=findCol([DOCLINK]);
+    const results = db.filter(row=>{
+      const big = Object.values(row).join(" ").toLowerCase();
+      if(terms.length && !terms.every(t=>big.includes(t))) return false;
+      const rowConcepts = colConcepts ? splitCellCSV(row[colConcepts]).map(x=>cleanText(x).toLowerCase()) : [];
+      if(selConcepts.length && !selConcepts.some(c=>rowConcepts.includes(c))) return false;
+      if(colYear){
+        const y = cleanText(row[colYear]).match(/\b\d{4}\b/);
+        const ry = y ? parseInt(y[0],10) : NaN;
+        // filter: row year must fall within [min, max] range
+        if(!isNaN(ry) && (ry < selectedYearMin || ry > selectedYearMax)) return false;
+      }
+      return true;
+    });
+    render(results,{colTitle,colAuthor,colYear,colConcepts,colDoc});
+  }
 
-
- function setupYearSlider() {
-   const sliderMin = document.getElementById("yearSliderMin");
-   const sliderMax = document.getElementById("yearSliderMax");
-
-
-   sliderMin.addEventListener("input", () => updateDualSlider("min"));
-   sliderMax.addEventListener("input", () => updateDualSlider("max"));
-
-
-   // Bring the active thumb to the top so its hover/focus ring isn't clipped
-   sliderMin.addEventListener("pointerdown", () => { sliderMin.style.zIndex = 4; sliderMax.style.zIndex = 2; });
-   sliderMax.addEventListener("pointerdown", () => { sliderMax.style.zIndex = 4; sliderMin.style.zIndex = 2; });
-
-
-   updateDualSlider("max"); // initialise fill on load
- }
-
-
- function resetYearSlider() {
-   document.getElementById("yearSliderMin").value = YEAR_MIN_DEFAULT;
-   document.getElementById("yearSliderMax").value = YEAR_MAX_DEFAULT;
-   updateDualSlider();
- }
-
-
- Papa.parse(csvUrl,{ download:true, header:true, skipEmptyLines:true, transformHeader:h=>{ const c=cleanText(h).toLowerCase(); headerMap[c]=h; return h; }, transform:v=>cleanText(v), complete:({data})=>{ db=(data||[]).filter(r=>Object.values(r||{}).some(v=>String(v||"").trim()!=="")); populateFilterOptions(); } });
-
-
- function populateFilterOptions(){ const sConcepts = new Set(DEFAULT_CONCEPTS.map(cleanText)); const sFormats = new Set(), sDiff = new Set(), sPubs = new Set(), sAuthors = new Set(); const cC=findCol([CONCEPTS]), cF=findCol([FORMAT]), cD=findCol([DIFFICULTY]), cP=findCol([PUBLISHER]), cA=findCol([AUTHOR]); db.forEach(row=>{ if(cC) splitCellCSV(row[cC]).forEach(c=>sConcepts.add(cleanText(c))); if(cF) splitCellCSV(row[cF]).forEach(v=>sFormats.add(cleanText(v))); if(cD) splitCellCSV(row[cD]).forEach(v=>sDiff.add(cleanText(v))); if(cP) splitCellCSV(row[cP]).forEach(v=>sPubs.add(cleanText(v))); if(cA) splitCellCSV(row[cA]).forEach(v=>sAuthors.add(cleanText(v))); }); fillOptions("conceptsFilter", [...sConcepts].sort()); fillOptions("formatFilter", [...sFormats].sort()); fillOptions("difficultyFilter", [...sDiff].sort()); fillOptions("publisherFilter", [...sPubs].sort()); fillOptions("authorFilter", [...sAuthors].sort()); setupYearSlider(); document.getElementById("searchBtn").onclick = runSearch; document.getElementById("clearBtn").onclick = clearAllAndReset; document.getElementById("searchInput").addEventListener("keydown", e=>{ if(e.key === "Enter") runSearch(); }); }
-
-
- function runSearch(){
-   const q = norm(document.getElementById("searchInput").value).toLowerCase();
-   const terms = q.split(/\s+/).filter(Boolean);
-   const selConcepts = getSelected("conceptsFilter").map(s=>s.toLowerCase());
-   const selectedYearMin = parseInt(document.getElementById("yearSliderMin").value, 10);
-   const selectedYearMax = parseInt(document.getElementById("yearSliderMax").value, 10);
-   const colTitle=findCol([TITLE]), colAuthor=findCol([AUTHOR]), colYear=findCol([YEAR]), colConcepts=findCol([CONCEPTS]), colDoc=findCol([DOCLINK]);
-   const results = db.filter(row=>{
-     const big = Object.values(row).join(" ").toLowerCase();
-     if(terms.length && !terms.every(t=>big.includes(t))) return false;
-     const rowConcepts = colConcepts ? splitCellCSV(row[colConcepts]).map(x=>cleanText(x).toLowerCase()) : [];
-     if(selConcepts.length && !selConcepts.some(c=>rowConcepts.includes(c))) return false;
-     if(colYear){
-       const y = cleanText(row[colYear]).match(/\b\d{4}\b/);
-       const ry = y ? parseInt(y[0],10) : NaN;
-       // filter: row year must fall within [min, max] range
-       if(!isNaN(ry) && (ry < selectedYearMin || ry > selectedYearMax)) return false;
-     }
-     return true;
-   });
-   render(results,{colTitle,colAuthor,colYear,colConcepts,colDoc});
- }
-
-
- function render(rows, cols){ const wrap = document.getElementById("resultsList"); if(!rows.length){ wrap.innerHTML = "<div class='resultItem'>No results found.</div>"; return; } wrap.innerHTML = rows.map(r=>{ const t = cols.colTitle ? norm(r[cols.colTitle]) : ""; const a = cols.colAuthor ? norm(r[cols.colAuthor]) : ""; const doc = cols.colDoc ? norm(r[cols.colDoc]) : ""; const concepts = cols.colConcepts ? splitCellCSV(r[cols.colConcepts]) : []; if(!t && !a) return ""; return `<div class="resultItem"><div style="display:flex;justify-content:space-between;gap:12px;"><div><div style="font-weight:800;font-size:15px;">${escapeHtml(t)}</div><div class="meta">${escapeHtml(a)}</div></div><div style="text-align:right;">${doc ? `<a class="docLink" href="${escapeAttr(doc)}" target="_blank">Open case file</a>` : ""}</div></div>${concepts.length ? `<div style="margin-top:8px">${concepts.map(c=>`<span class="tag">${escapeHtml(c)}</span>`).join(" ")}</div>` : ""}</div>`; }).join(""); }
- function escapeHtml(s){ return String(s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
- function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
- function clearAllAndReset(){ document.getElementById("searchInput").value=""; ["conceptsFilter","formatFilter","difficultyFilter","publisherFilter","authorFilter"].forEach(id=>clearOptions(id)); resetYearSlider(); document.getElementById("resultsList").innerHTML=""; }
+  function render(rows, cols){ const wrap = document.getElementById("resultsList"); if(!rows.length){ wrap.innerHTML = "<div class='resultItem'>No results found.</div>"; return; } wrap.innerHTML = rows.map(r=>{ const t = cols.colTitle ? norm(r[cols.colTitle]) : ""; const a = cols.colAuthor ? norm(r[cols.colAuthor]) : ""; const doc = cols.colDoc ? norm(r[cols.colDoc]) : ""; const concepts = cols.colConcepts ? splitCellCSV(r[cols.colConcepts]) : []; if(!t && !a) return ""; return `<div class="resultItem"><div style="display:flex;justify-content:space-between;gap:12px;"><div><div style="font-weight:800;font-size:15px;">${escapeHtml(t)}</div><div class="meta">${escapeHtml(a)}</div></div><div style="text-align:right;">${doc ? `<a class="docLink" href="${escapeAttr(doc)}" target="_blank">Open case file</a>` : ""}</div></div>${concepts.length ? `<div style="margin-top:8px">${concepts.map(c=>`<span class="tag">${escapeHtml(c)}</span>`).join(" ")}</div>` : ""}</div>`; }).join(""); }
+  function escapeHtml(s){ return String(s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+  function clearAllAndReset(){ document.getElementById("searchInput").value=""; ["conceptsFilter","formatFilter","difficultyFilter","publisherFilter","authorFilter"].forEach(id=>clearOptions(id)); resetYearSlider(); document.getElementById("resultsList").innerHTML=""; }
 </script>
 </body>
 </html>
-
-
-
