@@ -1,4 +1,4 @@
-# complexity-kids-program-childrens-book-database
+# complexity-group-education-materials
 Client-side search and filter tool that outputs education materials that advance complexity thinking from a Google Sheets database and displays searchable results on a Squarespace website.
 
 A centralized, Google-Sheets–based database of education materials apart of the Complexity Group Curriculum and resources that align with complexity thinking.
