@@ -1,52 +1,26 @@
-# Complexity Group Education Materials
+# complexity-kids-program-childrens-book-database
+Client-side search and filter tool that outputs education materials that advance complexity thinking from a Google Sheets database and displays searchable results on a Squarespace website.
 
-A lightweight, client-side search and filter tool that pulls structured data from Google Sheets and displays dynamic, searchable results in the browser.
+A centralized, Google-Sheets–based database of education materials apart of the Complexity Group Curriculum and resources that align with complexity thinking.
 
-## Search + Filters Tool
+**The Platform Enables Users to**: Search through a database of selected education materials. Filter by concepts, format, difficult, publisher, and author
 
-This project provides a flexible and interactive interface for exploring datasets using keyword search and multiple filters.
+**How It Works**: Complexity-based Educational books are standardized into a Google Sheets database. Each row represents one educational resource. Checkbox-enabled columns support filtering.
 
-The tool allows users to:
+**Deployment**: This tool is designed to be embedded into a Squarespace site using a Code Block.
 
-- Search records using multiple keywords
-- Filter by concept, format, difficulty, publisher, and author
-- Narrow results using a dual-range year slider
-- View tagged concepts for each result
-- Open linked documents directly from results
-- Automatically update when the Google Sheet is modified
+**Steps**:
 
-## How It Works
+1. Publish the Google Sheet to the web as a CSV
+2. Copy the Google Sheets CSV URL
+3. Paste the contents of "search" into a Squarespace Code Block
+4. Save and publish the site
 
-- Data is stored in a public Google Sheet  
-- The sheet is published as a CSV  
-- JavaScript fetches and parses the CSV using PapaParse  
-- Filter options are generated dynamically from the dataset  
-- Results are filtered and rendered in real time on the page  
+**Updating Data**: No structural changes are required to update content. Data can be maintained by editing the Google Sheet, provided column headers and formats remain consistent.
 
-## Deployment
+**Technologies Used**
 
-This tool is fully client-side and can be embedded into any website.
-
-### Steps:
-
-1. Publish your Google Sheet to the web as a CSV  
-2. Copy the Google Sheets CSV URL  
-3. Replace the `csvUrl` variable in the script with your link  
-4. Paste the HTML file into your site (or host it separately)  
-5. Open in browser or embed (e.g., Squarespace Code Block)  
-
-## Updating Data
-
-No code changes are needed to update content.
-
-- Simply edit the Google Sheet  
-- Keep column headers consistent  
-- Changes will automatically reflect on refresh  
-
-## Technologies Used
-
-- HTML  
-- CSS  
-- JavaScript  
-- PapaParse  
-- Google Sheets  
+* Google Sheets
+* HTML
+* CSS
+* JavaScript
